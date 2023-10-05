@@ -45,3 +45,30 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /android/app/build
+
+
+# Flutter/Dart-specific files
+.idea/
+.vscode/
+.pub-cache/
+.dart_tool/
+.packages
+pubspec.lock
+flutter.lock
+
+# Android-specific files
+android/app/build/
+android/app/outputs/
+android/build/
+android/gradle/
+android/gradlew
+android/gradlew.bat
+
+# iOS-specific files
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/.last_build_id
+ios/Flutter/Flutter.framework/
+
+# Build artifacts
+build/
