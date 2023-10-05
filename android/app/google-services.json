@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "324046568834",
+    "project_id": "brainchief-d1cef",
+    "storage_bucket": "brainchief-d1cef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:324046568834:android:9fee24611dc5f4595ba39b",
+        "android_client_info": {
+          "package_name": "com.brainchief.lms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "324046568834-djjo47a8oj142203tdd5gptpbnrj82ig.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLedeFqzlBSSZA5NzXKjONU1Eogp7Uvp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "324046568834-djjo47a8oj142203tdd5gptpbnrj82ig.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "324046568834-b3nm22714u0cvanno50ehvi6m6jr1lg3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brainchiefios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
