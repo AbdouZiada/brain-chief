@@ -1,6 +1,14 @@
 import UIKit
 import Flutter
 import CallKit
+import AVKit
+
+//class AirPlayDetector {
+//    static func isAirPlayActive() -> Bool {
+//        let screen = UIScreen.main
+//        return screen.isAirPlayScreen
+//    }
+//}
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -9,7 +17,19 @@ import CallKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-
+        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+            let airPlayChannel = FlutterMethodChannel(name: "com.brainchief/isAirPlayActive",
+                                                      binaryMessenger: controller.binaryMessenger)
+         
+        airPlayChannel.setMethodCallHandler({
+          [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+          // This method is invoked on the UI thread.
+          guard call.method == "getAirplayStatus" else {
+            result(FlutterMethodNotImplemented)
+            return
+          }
+          self?.getAirplayStatus(result: result)
+        })
         self.window.makeSecure()
         
         if isCallKitSupported() {
@@ -17,6 +37,24 @@ import CallKit
         }
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+   var isAudioSessionUsingAirplayOutputRoute: Bool {
+        let audioSession = AVAudioSession.sharedInstance()
+        let currentRoute = audioSession.currentRoute
+
+        for outputPort in currentRoute.outputs {
+            if outputPort.portType == AVAudioSession.Port.airPlay {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private func getAirplayStatus(result: FlutterResult) {
+        let isAudioActive = isAudioSessionUsingAirplayOutputRoute
+        let isAirPlayActive = UIScreen.screens.count > 1
+        result(isAirPlayActive || isAudioActive)
     }
     
     override func applicationWillResignActive(

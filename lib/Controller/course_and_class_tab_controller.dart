@@ -20,8 +20,8 @@ class CourseClassQuizTabController extends GetxController
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: "${stctrl.lang["Courses"]}"),
-    Tab(text: "${stctrl.lang["Classes"]}"),
-    Tab(text: "${stctrl.lang["Quiz"]}"),
+    // Tab(text: "${stctrl.lang["Classes"]}"),
+    // Tab(text: "${stctrl.lang["Quiz"]}"),
   ];
 
   TabController? tabController;

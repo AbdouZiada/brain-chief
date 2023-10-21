@@ -21,7 +21,7 @@ import '../utils/CustomSnackBar.dart';
 
 class EditProfileController extends GetxController {
   final DashboardController dashboardController =
-  Get.put(DashboardController());
+      Get.put(DashboardController());
 
   var tokenKey = "token";
   GetStorage userToken = GetStorage();
@@ -151,32 +151,27 @@ class EditProfileController extends GetxController {
     request.headers['ApiKey'] = '$apiKey';
     if (selectedImagePath.value != "") {
       http.MultipartFile multipartFile =
-      await http.MultipartFile.fromPath('image', selectedImagePath.value);
+          await http.MultipartFile.fromPath('image', selectedImagePath.value);
       request.files.add(multipartFile);
     } else {}
     print(request.fields);
 
-    request
-        .send()
-        .then((result) async {
+    request.send().then((result) async {
       http.Response.fromStream(result).then((response) async {
         var jsonString = jsonDecode(response.body);
         if (response.statusCode == 200) {
           await getProfileData().then((value) {
             dashboardController.profileData = value;
           });
-          CustomSnackBar()
-              .snackBarSuccess(jsonString['message'].toString());
+          CustomSnackBar().snackBarSuccess(jsonString['message'].toString());
         } else {
           CustomSnackBar().snackBarError(jsonString['message'].toString());
         }
         return response.body;
       });
-    })
-        .catchError((err) {
+    }).catchError((err) {
       print('error : ' + err.toString());
-    })
-        .whenComplete(() {});
+    }).whenComplete(() {});
   }
 
   Future<List<AllCountry>?> getCountries() async {

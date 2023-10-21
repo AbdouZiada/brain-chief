@@ -175,8 +175,8 @@ class _CourseAndClassState extends State<CourseAndClass> {
                     physics: NeverScrollableScrollPhysics(),
                     children: <Widget>[
                       MyCoursePage(),
-                      MyClassView(),
-                      MyQuizView(),
+                      // MyClassView(),
+                      // MyQuizView(),
                     ],
                   ),
                 )

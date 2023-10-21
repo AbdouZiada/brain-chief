@@ -1,5 +1,6 @@
 // Dart imports:
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
@@ -31,6 +32,7 @@ import 'package:lms_flutter_app/Views/VideoView/PDFViewPage.dart';
 import 'package:lms_flutter_app/Views/VideoView/VideoChipherPage.dart';
 import 'package:lms_flutter_app/Views/VideoView/VideoPlayerPage.dart';
 import 'package:lms_flutter_app/Views/VideoView/VimeoPlayerPage.dart';
+import 'package:lms_flutter_app/Views/VideoView/from_youtube.dart';
 import 'package:lms_flutter_app/utils/CustomAlertBox.dart';
 import 'package:lms_flutter_app/utils/CustomExpansionTileCard.dart';
 import 'package:lms_flutter_app/utils/CustomSnackBar.dart';
@@ -48,6 +50,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vdocipher_flutter/vdocipher_flutter.dart';
+
+import '../../VideoView/from_network.dart';
 
 // ignore: must_be_immutable
 class CourseDetailsPage extends StatefulWidget {
@@ -80,6 +84,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
   void initState() {
     if (Platform.isIOS) {
       controller.isPurchasingIAP.value = false;
+      controller.isEnrollLoading.value = false;
       IAPService().initPlatformState();
     }
     super.initState();
@@ -294,7 +299,8 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           floatingActionButton: dashboardController.loggedIn.value
-              ? controller.isCourseBought.value
+              ? controller.isCourseBought.value ||
+                      controller.isEnrollLoading.value
                   ? SizedBox.shrink()
                   : controller.courseDetails.value.price == 0
                       ? ElevatedButton(
@@ -310,7 +316,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                                 .buyNow(controller.courseDetails.value.id)
                                 .then((value) async {
                               if (value) {
-                                await Future.delayed(Duration(seconds: 5), () {
+                                await Future.delayed(Duration(seconds: 0), () {
                                   Get.back();
                                   dashboardController
                                       .changeTabIndex(Platform.isIOS ? 1 : 2);
@@ -594,12 +600,17 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                                   );
                                   context.loaderOverlay.hide();
                                 } else if (lessons?[index].host == "Youtube") {
+                                  log(lessons?[index].videoUrl ?? '',
+                                      name: 'pod player');
                                   Get.bottomSheet(
-                                    VideoPlayerPage(
-                                      "Youtube",
-                                      lesson: lessons?[index] ?? Lesson(),
-                                      videoID: lessons?[index].videoUrl ?? '',
+                                    PlayVideoFromYoutube(
+                                      source: lessons?[index].videoUrl ?? '',
                                     ),
+                                    // VideoPlayerPage(
+                                    //   "Youtube",
+                                    //   lesson: lessons?[index] ?? Lesson(),
+                                    //   videoID: lessons?[index].videoUrl ?? '',
+                                    // ),
                                     backgroundColor: Colors.black,
                                     isScrollControlled: true,
                                   );
@@ -663,11 +674,14 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                                         "/" +
                                         (lessons?[index].videoUrl ?? '');
                                     Get.bottomSheet(
-                                      VideoPlayerPage(
-                                        "network",
-                                        lesson: lessons?[index] ?? Lesson(),
-                                        videoID: videoUrl,
+                                      PlayVideoFromNetwork(
+                                        source: videoUrl,
                                       ),
+                                      // VideoPlayerPage(
+                                      //   "network",
+                                      //   lesson: lessons?[index] ?? Lesson(),
+                                      //   videoID: videoUrl,
+                                      // ),
                                       backgroundColor: Colors.black,
                                       isScrollControlled: true,
                                     );
@@ -676,11 +690,14 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                                       lessons?[index].host == "Iframe") {
                                     videoUrl = lessons?[index].videoUrl;
                                     Get.bottomSheet(
-                                      VideoPlayerPage(
-                                        "network",
-                                        lesson: lessons?[index] ?? Lesson(),
-                                        videoID: videoUrl,
+                                      PlayVideoFromNetwork(
+                                        source: videoUrl,
                                       ),
+                                      // VideoPlayerPage(
+                                      //   "network",
+                                      //   lesson: lessons?[index] ?? Lesson(),
+                                      //   videoID: videoUrl,
+                                      // ),
                                       backgroundColor: Colors.black,
                                       isScrollControlled: true,
                                     );

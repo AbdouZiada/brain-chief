@@ -12,6 +12,8 @@ import '../../Model/Course/CourseMain.dart';
 import '../../Views/VideoView/VideoChipherPage.dart';
 import '../../Views/VideoView/VideoPlayerPage.dart';
 import '../../Views/VideoView/VimeoPlayerPage.dart';
+import '../../Views/VideoView/from_network.dart';
+import '../../Views/VideoView/from_youtube.dart';
 import '../CustomSnackBar.dart';
 import '../CustomText.dart';
 import 'StarCounterWidget.dart';
@@ -89,7 +91,8 @@ class CourseDetailsFlexilbleSpaceBar extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           StarCounterWidget(
-                            value: double.tryParse(course.review.toString()) ?? 0,
+                            value:
+                                double.tryParse(course.review.toString()) ?? 0,
                             color: Color(0xffFFCF23),
                             size: 10,
                           ),
@@ -135,10 +138,13 @@ class CourseDetailsFlexilbleSpaceBar extends StatelessWidget {
                                 );
                               } else if (course.host == "Youtube") {
                                 Get.bottomSheet(
-                                  VideoPlayerPage(
-                                    "Youtube",
-                                    videoID: course.trailerLink,
+                                  PlayVideoFromYoutube(
+                                    source: course.trailerLink ?? '',
                                   ),
+                                  // VideoPlayerPage(
+                                  //   "Youtube",
+                                  //   videoID: course.trailerLink,
+                                  // ),
                                   backgroundColor: Colors.black,
                                   isScrollControlled: true,
                                 );
@@ -172,13 +178,18 @@ class CourseDetailsFlexilbleSpaceBar extends StatelessWidget {
                               } else {
                                 var videoUrl;
                                 if (course.host == "Self") {
-                                  videoUrl = rootUrl + "/" + course.trailerLink.toString();
+                                  videoUrl = rootUrl +
+                                      "/" +
+                                      course.trailerLink.toString();
                                 }
                                 Get.bottomSheet(
-                                  VideoPlayerPage(
-                                    "network",
-                                    videoID: videoUrl,
+                                  PlayVideoFromNetwork(
+                                    source: videoUrl,
                                   ),
+                                  // VideoPlayerPage(
+                                  //   "network",
+                                  //   videoID: videoUrl,
+                                  // ),
                                   backgroundColor: Colors.black,
                                   isScrollControlled: true,
                                 );
@@ -214,10 +225,10 @@ class CourseDetailsFlexilbleSpaceBar extends StatelessWidget {
                             width: 1,
                           ),
                           course.duration != null
-                              ? courseStructure(
-                                  getTimeString(int.parse(course.duration.toString()))
-                                          .toString() +
-                                      " ${stctrl.lang["Hour(s)"]}")
+                              ? courseStructure(getTimeString(
+                                          int.parse(course.duration.toString()))
+                                      .toString() +
+                                  " ${stctrl.lang["Hour(s)"]}")
                               : SizedBox.shrink(),
                         ],
                       ),

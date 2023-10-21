@@ -301,8 +301,8 @@ class CustomDrawer extends StatelessWidget {
                                         height: 40,
                                         width: 40,
                                         image: stctrl.dashboardController
-                                                .profileData.image
-                                                !.contains('public/')
+                                                .profileData.image!
+                                                .contains('public/')
                                             ? NetworkImage(
                                                 "$rootUrl/${stctrl.dashboardController.profileData.image}")
                                             : NetworkImage(
@@ -336,10 +336,10 @@ class CustomDrawer extends StatelessWidget {
                                   ? SizedBox.shrink()
                                   : Text(
                                       appCurrency +
-                                              ' ' +
-                                              stctrl.dashboardController
-                                                  .profileData.balance
-                                                  .toString(),
+                                          ' ' +
+                                          stctrl.dashboardController.profileData
+                                              .balance
+                                              .toString(),
                                       style: TextStyle(
                                           fontSize: 13,
                                           color: Color(0xff8E99B7)),

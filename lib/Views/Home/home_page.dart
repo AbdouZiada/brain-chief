@@ -74,6 +74,11 @@ class HomePage extends GetView<HomeController> {
                   SizedBox(
                     height: 15,
                   ),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       controller.updateStatus(false);
+                  //     },
+                  //     child: Text('press')),
 
                   /// TOP CATEGORIES
                   Container(
@@ -467,7 +472,6 @@ class HomePage extends GetView<HomeController> {
                       }
                     }),
                   ),
-
                   //**  POPULAR COURSES
                   Container(
                       margin: EdgeInsets.only(

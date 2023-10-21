@@ -50,6 +50,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:vdocipher_flutter/vdocipher_flutter.dart';
 
 import '../../../utils/widgets/course_details_flexible_space_bar.dart';
+import '../../VideoView/from_network.dart';
+import '../../VideoView/from_youtube.dart';
 
 // ignore: must_be_immutable
 class MyCourseDetailsView extends StatefulWidget {
@@ -681,11 +683,16 @@ class _MyCourseDetailsViewState extends State<MyCourseDetailsView> {
                                     context.loaderOverlay.hide();
                                   } else if (lessons?[index].host ==
                                       "Youtube") {
+                                    log(lessons?[index].videoUrl ?? '',
+                                        name: 'pod player');
                                     Get.bottomSheet(
-                                      VideoPlayerPage(
-                                        "Youtube",
-                                        lesson: lessons?[index] ?? Lesson(),
-                                        videoID: lessons?[index].videoUrl ?? '',
+                                      // VideoPlayerPage(
+                                      //   "Youtube",
+                                      //   lesson: lessons?[index] ?? Lesson(),
+                                      //   videoID: lessons?[index].videoUrl ?? '',
+                                      // ),
+                                      PlayVideoFromYoutube(
+                                        source: lessons?[index].videoUrl ?? '',
                                       ),
                                       backgroundColor: Colors.black,
                                       isScrollControlled: true,
@@ -754,11 +761,14 @@ class _MyCourseDetailsViewState extends State<MyCourseDetailsView> {
                                           "/" +
                                           '${lessons?[index].videoUrl}';
                                       Get.bottomSheet(
-                                        VideoPlayerPage(
-                                          "network",
-                                          lesson: lessons?[index] ?? Lesson(),
-                                          videoID: videoUrl,
+                                        PlayVideoFromNetwork(
+                                          source: videoUrl,
                                         ),
+                                        // VideoPlayerPage(
+                                        //   "network",
+                                        //   lesson: lessons?[index] ?? Lesson(),
+                                        //   videoID: videoUrl,
+                                        // ),
                                         backgroundColor: Colors.black,
                                         isScrollControlled: true,
                                       );
@@ -767,11 +777,14 @@ class _MyCourseDetailsViewState extends State<MyCourseDetailsView> {
                                         lessons?[index].host == "Iframe") {
                                       videoUrl = lessons?[index].videoUrl;
                                       Get.bottomSheet(
-                                        VideoPlayerPage(
-                                          "network",
-                                          lesson: lessons?[index] ?? Lesson(),
-                                          videoID: videoUrl,
+                                        PlayVideoFromNetwork(
+                                          source: videoUrl,
                                         ),
+                                        // VideoPlayerPage(
+                                        //   "network",
+                                        //   lesson: lessons?[index] ?? Lesson(),
+                                        //   videoID: videoUrl,
+                                        // ),
                                         backgroundColor: Colors.black,
                                         isScrollControlled: true,
                                       );

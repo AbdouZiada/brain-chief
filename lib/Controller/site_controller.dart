@@ -32,7 +32,7 @@ class SiteController extends GetxController {
   RxList<Language> languages = <Language>[].obs;
 
   Future getLanguage({String? langCode}) async {
-    dashboardController.isLoading(true);
+    // dashboardController.isLoading(true);
 
     var token = userToken.read(tokenKey);
 
@@ -61,9 +61,9 @@ class SiteController extends GetxController {
 
       Get.updateLocale(Locale('${code.value}'));
 
-      dashboardController.isLoading(false);
+      //  dashboardController.isLoading(false);
     } else {
-      dashboardController.isLoading(false);
+      // dashboardController.isLoading(false);
       code.value = "";
     }
   }

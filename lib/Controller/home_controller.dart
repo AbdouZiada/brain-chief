@@ -26,6 +26,7 @@ class HomeController extends GetxController {
   var isLoading = false.obs;
 
   var isCourseLoading = false.obs;
+  var isEnrollLoading = false.obs;
 
   var cartAdded = false.obs;
 
@@ -165,6 +166,7 @@ class HomeController extends GetxController {
   }
 
   Future<bool> buyNow(int courseId) async {
+    isEnrollLoading(true);
     Uri addToCartUrl = Uri.parse(baseUrl + '/buy-now');
     var token = userToken.read(tokenKey);
     var response = await http.post(
@@ -226,8 +228,7 @@ class HomeController extends GetxController {
         cartAdded(false);
         await cartController.getCartList().then((value2) {
           value2?.forEach((element) {
-            if (element.courseId.toString() ==
-                courseID.value.toString()) {
+            if (element.courseId.toString() == courseID.value.toString()) {
               cartAdded(true);
             }
           });
@@ -243,7 +244,7 @@ class HomeController extends GetxController {
         courseDetails.value = value ?? CourseMain();
       });
       return courseDetails.value;
-    } catch(e, t){
+    } catch (e, t) {
       print(e);
       print(t);
     } finally {
@@ -265,27 +266,23 @@ class HomeController extends GetxController {
     request.fields['review'] = review;
     request.fields['rating'] = rating.toString();
 
-    request
-        .send()
-        .then((result) async {
-          http.Response.fromStream(result).then((response) {
-            var jsonString = jsonDecode(response.body);
-            if (jsonString['success'] == false) {
-              CustomSnackBar().snackBarError(jsonString['message']);
-            } else {
-              CustomSnackBar().snackBarError(jsonString['message']);
+    request.send().then((result) async {
+      http.Response.fromStream(result).then((response) {
+        var jsonString = jsonDecode(response.body);
+        if (jsonString['success'] == false) {
+          CustomSnackBar().snackBarError(jsonString['message']);
+        } else {
+          CustomSnackBar().snackBarError(jsonString['message']);
 
-              Get.back();
-              getCourseDetails();
-              reviewText.text = "";
-            }
-            return response.body;
-          });
-        })
-        .catchError((err) {
+          Get.back();
+          getCourseDetails();
+          reviewText.text = "";
+        }
+        return response.body;
+      });
+    }).catchError((err) {
       print('error : ' + err.toString());
-    })
-        .whenComplete(() {});
+    }).whenComplete(() {});
   }
 
   Future<List<Lesson>?> getLessons(int courseId, int chapterId) async {

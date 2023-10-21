@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_jailbreak_detection/flutter_jailbreak_detection.dart';
 import 'package:get/get.dart';
 import 'package:lms_flutter_app/Config/app_config.dart';
@@ -15,6 +16,7 @@ import 'package:presentation_displays/display.dart';
 import 'package:ios_insecure_screen_detector/ios_insecure_screen_detector.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
+import '../Controller/home_controller.dart';
 import '../Service/firebase_remote_config_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,10 +34,39 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const platform = MethodChannel('com.brainchief/isAirPlayActive');
   bool _isOpen = false;
   IosInsecureScreenDetector _insecureScreenDetector =
       IosInsecureScreenDetector();
   bool _isCaptured = false;
+
+  // Get airplay level.
+
+  Future<void> _getairplayLevel() async {
+    String airplayStatus = '';
+    log(airplayStatus, name: 'getAirplayStatus');
+
+    try {
+      bool? result = await platform.invokeMethod<bool>('getAirplayStatus');
+      airplayStatus = 'airplay is $result % .';
+      log(airplayStatus, name: 'getAirplayStatus');
+      if (result ?? false) {
+        !_isOpen
+            ? Get.dialog(
+                DialogContent(
+                  text: 'لا يمكن استخدام اير بلاي اثناء استخدام التطبيق',
+                ),
+                barrierDismissible: false,
+              ).then((value) => _isOpen = false)
+            : null;
+        _isOpen = true;
+      }
+    } on PlatformException catch (e) {
+      airplayStatus = "Failed to get airplayStatus: '${e.message}'.";
+      log(airplayStatus, name: 'airplayStatus');
+    }
+  }
+
   void checkJailbreak() async {
     bool jailbroken = await FlutterJailbreakDetection.jailbroken;
     if (jailbroken) {
@@ -125,8 +156,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void getAllDisplaysPerdoic() {
-    Timer.periodic(Duration(seconds: 5), (timer) {
+    Timer.periodic(Duration(seconds: 200), (timer) {
       getAllDisplays();
+      _getairplayLevel();
     });
   }
 
@@ -186,6 +218,7 @@ class _SplashScreenState extends State<SplashScreen> {
       checkJailbreak();
       getAllDisplaysPerdoic();
       forceUpdate();
+      _getairplayLevel();
 
       if (widget.sharedPref.getBool('isSelectedLanguage') != true) {
         Get.off(() => ChooseLanguage());
@@ -236,12 +269,28 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-class DialogContent extends StatelessWidget {
+class DialogContent extends StatefulWidget {
   final String text;
   const DialogContent({
     super.key,
     required this.text,
   });
+
+  @override
+  State<DialogContent> createState() => _DialogContentState();
+}
+
+class _DialogContentState extends State<DialogContent> {
+  final HomeController homeController = Get.put(HomeController());
+  @override
+  void initState() {
+    // TODO: implement initState
+    stctrl.dashboardController.updateStatus(false).then((value) async {
+      await stctrl.dashboardController.removeToken('token');
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +317,7 @@ class DialogContent extends StatelessWidget {
                 ),
               ),
               Text(
-                text,
+                widget.text,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,

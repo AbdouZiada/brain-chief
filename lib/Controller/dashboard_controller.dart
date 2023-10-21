@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:developer' as dev;
 
 // Flutter imports:
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -126,10 +127,52 @@ class DashboardController extends GetxController {
     }
   }
 
+  Future fetchUserLoginAfterRegister() async {
+    try {
+      dev.log(registerEmail.text.toString());
+      dev.log(registerEmail.text.toString());
+
+      var login =
+          await RemoteServices.login(registerEmail.text, registerPassword.text);
+      if (login != null) {
+        if (login['data']['is_verify'] != null) {
+          token = login['data']['access_token'];
+          loginMsg.value = login['message'];
+          if (token.length > 5) {
+            await saveToken(token);
+            await loadUserToken();
+            await setupNotification();
+            final sharedPref = await SharedPreferences.getInstance();
+            sharedPref.setString(
+                'languageCode', sharedPref.getString('languageCode') ?? "ar");
+            await stctrl.getLanguage();
+          }
+          return login;
+        } else {
+          loginMsg.value = "${stctrl.lang["Not verified"]}";
+          Get.snackbar(
+            "${stctrl.lang["Verify Your Email Address"]}",
+            "${stctrl.lang["Before proceeding, please check your email for a verification link Login in Using that Link."]}",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            borderRadius: 5,
+            duration: Duration(seconds: 6),
+          );
+        }
+      }
+    } finally {
+      isLoading(false);
+    }
+  }
+
   // call login api
   Future fetchUserLogin() async {
     try {
       isLoading(true);
+      dev.log(registerEmail.text.toString());
+      dev.log(registerEmail.text.toString());
+
       var login = await RemoteServices.login(email.text, password.text);
       if (login != null) {
         if (login['data']['is_verify'] != null) {
@@ -213,7 +256,7 @@ class DashboardController extends GetxController {
 
   Future fetchUserRegister() async {
     try {
-      isLoading(true);
+      // isLoading(true);
       var login = await RemoteServices.register(
         registerName.text,
         registerEmail.text,
@@ -223,14 +266,7 @@ class DashboardController extends GetxController {
       );
       if (login != null) {
         if (login['success'] == true) {
-          showRegisterScreen();
-
-          registerName.clear();
-          registerEmail.clear();
-          registerPhone.clear();
-          registerPassword.clear();
-          registerConfirmPassword.clear();
-
+          // showRegisterScreen();
           Get.snackbar(
             login['message'],
             "",
@@ -239,13 +275,21 @@ class DashboardController extends GetxController {
             colorText: Colors.white,
             borderRadius: 5,
           );
+          if (Platform.isAndroid) {
+            changeTabIndex(0);
+          }
+          await fetchUserLoginAfterRegister();
+
+          registerName.clear();
+          registerEmail.clear();
+          registerPhone.clear();
+          registerPassword.clear();
+          registerConfirmPassword.clear();
         }
 
         return login;
       }
-    } finally {
-      isLoading(false);
-    }
+    } finally {}
   }
 
   Future<void> saveToken(String msg) async {
@@ -254,6 +298,27 @@ class DashboardController extends GetxController {
       await preferences.setString(tokenKey, msg);
       await userToken.write(tokenKey, msg);
     } else {}
+  }
+
+  Future<void> updateStatus(bool status) async {
+    var postUri = Uri.parse(baseUrl + '/update-status');
+
+    var token = await userToken.read(tokenKey);
+    final response = await http.post(
+      postUri,
+      headers: {
+        'Authorization': 'Bearer $token', // Replace with your API token
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'status': status}),
+    );
+
+    if (response.statusCode == 200) {
+      print('User status updated successfully');
+    } else {
+      print('Failed to update user status. Error code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
   }
 
   Future<void> removeToken(String msg) async {

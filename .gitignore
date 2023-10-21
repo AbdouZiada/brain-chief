@@ -63,6 +63,7 @@ android/build/
 android/gradle/
 android/gradlew
 android/gradlew.bat
+android/.gradle
 
 # iOS-specific files
 ios/Pods/

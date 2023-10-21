@@ -159,8 +159,7 @@ class _EditProfileState extends State<EditProfile> {
                           size: icon_size,
                           color: Color.fromRGBO(142, 153, 183, 0.498),
                         ),
-                        textEditingController:
-                            controller.ctFirstName,
+                        textEditingController: controller.ctFirstName,
                       ),
                       SizedBox(
                         height: 20,
@@ -173,8 +172,7 @@ class _EditProfileState extends State<EditProfile> {
                           size: icon_size,
                           color: Color.fromRGBO(142, 153, 183, 0.498),
                         ),
-                        textEditingController:
-                            controller.ctEmail,
+                        textEditingController: controller.ctEmail,
                       ),
                       SizedBox(
                         height: 20,
@@ -187,8 +185,7 @@ class _EditProfileState extends State<EditProfile> {
                           size: icon_size,
                           color: Color.fromRGBO(142, 153, 183, 0.498),
                         ),
-                        textEditingController:
-                            controller.ctPhone,
+                        textEditingController: controller.ctPhone,
                       ),
                       SizedBox(
                         height: 20,
@@ -202,8 +199,7 @@ class _EditProfileState extends State<EditProfile> {
                           size: icon_size,
                           color: Color.fromRGBO(142, 153, 183, 0.498),
                         ),
-                        textEditingController:
-                            controller.ctAbout,
+                        textEditingController: controller.ctAbout,
                       ),
                       SizedBox(
                         height: 20,
@@ -224,8 +220,7 @@ class _EditProfileState extends State<EditProfile> {
                           size: icon_size,
                           color: Color.fromRGBO(142, 153, 183, 0.498),
                         ),
-                        textEditingController:
-                            controller.ctAddress,
+                        textEditingController: controller.ctAddress,
                       ),
                       SizedBox(
                         height: 20,
@@ -260,8 +255,7 @@ class _EditProfileState extends State<EditProfile> {
                             );
                           }).toList(),
                           onChanged: (value) async {
-                            controller.selectedCountry.value =
-                                (value)!;
+                            controller.selectedCountry.value = (value)!;
 
                             await controller
                                 .getStates(controller.selectedCountry.value.id)
@@ -280,69 +274,70 @@ class _EditProfileState extends State<EditProfile> {
                           value: controller.selectedCountry.value,
                         ),
                       ),
-
                       if (controller.stateList.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            "${stctrl.lang["State"]}",
-                            style: Get.textTheme.titleMedium,
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Get.textTheme.titleMedium?.color ??
-                                      Color(0xFFFFFFFF),
-                                  width: 1),
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 20,
                             ),
-                            padding:
-                                EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                            child: DropdownButton(
-                              elevation: 1,
-                              isExpanded: true,
-                              underline: Container(),
-                              items: controller.stateList.map((item) {
-                                return DropdownMenuItem(
-                                  value: item,
+                            Text(
+                              "${stctrl.lang["State"]}",
+                              style: Get.textTheme.titleMedium,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Get.textTheme.titleMedium?.color ??
+                                        Color(0xFFFFFFFF),
+                                    width: 1),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 5),
+                              child: DropdownButton(
+                                elevation: 1,
+                                isExpanded: true,
+                                underline: Container(),
+                                items: controller.stateList.map((item) {
+                                  return DropdownMenuItem(
+                                    value: item,
+                                    child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(item.name ?? '')),
+                                  );
+                                }).toList(),
+                                onChanged: (value) async {
+                                  AllCountry v = (value as AllCountry);
+
+                                  await controller
+                                      .getCities(v.id)
+                                      .then((ctValue) {
+                                    controller.selectedCity.value =
+                                        ctValue!.first;
+                                  });
+                                },
+                                hint: Container(
                                   child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Text(item.name ?? '')),
-                                );
-                              }).toList(),
-                              onChanged: (value) async {
-
-                                AllCountry v=(value as AllCountry);
-
-                                await controller
-                                    .getCities(v.id)
-                                    .then((ctValue) {
-                                  controller.selectedCity.value = ctValue!.first;
-                                });
-                              },
-                              hint: Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                    "Select A State",
-                                    style: TextStyle(color: Colors.black),
-                                    textAlign: TextAlign.start,
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      "Select A State",
+                                      style: TextStyle(color: Colors.black),
+                                      textAlign: TextAlign.start,
+                                    ),
                                   ),
                                 ),
+                                value: controller.selectedState.value,
                               ),
-                              value: controller.selectedState.value,
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                       controller.cityList.length == 0
                           ? SizedBox.shrink()
                           : Column(
@@ -390,7 +385,6 @@ class _EditProfileState extends State<EditProfile> {
                                 onChanged: (value) async {
                                   // controller.selectedCountry.value =
                                   //     (value as AllCountry?)!;
-
                                 },
                                 value: controller.selectedCity.value,
                               ),
@@ -406,8 +400,7 @@ class _EditProfileState extends State<EditProfile> {
                           size: icon_size,
                           color: Color.fromRGBO(142, 153, 183, 0.498),
                         ),
-                        textEditingController:
-                            controller.ctZipCode,
+                        textEditingController: controller.ctZipCode,
                       ),
                       Center(
                         child: Column(

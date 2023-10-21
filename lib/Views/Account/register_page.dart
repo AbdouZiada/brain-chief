@@ -222,6 +222,7 @@ class RegisterPage extends GetView<DashboardController> {
                   ),
                   onTap: () async {
                     await controller.fetchUserRegister();
+                    //  await controller.fetchUserLogin();
                   },
                 ),
               ),
