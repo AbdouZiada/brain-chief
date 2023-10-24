@@ -50,6 +50,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:vdocipher_flutter/vdocipher_flutter.dart';
 
 import '../../../utils/widgets/course_details_flexible_space_bar.dart';
+import '../../VideoView/from_iframe.dart';
 import '../../VideoView/from_network.dart';
 import '../../VideoView/from_youtube.dart';
 
@@ -773,13 +774,44 @@ class _MyCourseDetailsViewState extends State<MyCourseDetailsView> {
                                         isScrollControlled: true,
                                       );
                                       context.loaderOverlay.hide();
-                                    } else if (lessons?[index].host == "URL" ||
-                                        lessons?[index].host == "Iframe") {
+                                    } else if (lessons?[index].host == "URL") {
                                       videoUrl = lessons?[index].videoUrl;
+                                      // Get.bottomSheet(
+                                      //   PlayVideoFromNetwork(
+                                      //     source: videoUrl,
+                                      //   ),
                                       Get.bottomSheet(
-                                        PlayVideoFromNetwork(
+                                        VideoPlayerPage(
+                                          "network",
+                                          lesson: lessons?[index] ?? Lesson(),
+                                          videoID: videoUrl,
+                                        ),
+
+                                        // VideoPlayerPage(
+                                        //   "network",
+                                        //   lesson: lessons?[index] ?? Lesson(),
+                                        //   videoID: videoUrl,
+                                        // ),
+                                        backgroundColor: Colors.black,
+                                        isScrollControlled: true,
+                                      );
+                                      context.loaderOverlay.hide();
+                                    } else if (lessons?[index].host ==
+                                        "Iframe") {
+                                      videoUrl = lessons?[index].videoUrl;
+                                      log('PlayVideoFromIframe',
+                                          name: 'PlayVideoFromIframe');
+                                      Get.bottomSheet(
+                                        PlayVideoFromIframe(
                                           source: videoUrl,
                                         ),
+
+                                        // Get.bottomSheet(
+                                        //   VimeoPlayerPage(
+                                        //     lesson: lessons?[index] ?? Lesson(),
+                                        //     videoId: videoUrl,
+                                        //   ),
+
                                         // VideoPlayerPage(
                                         //   "network",
                                         //   lesson: lessons?[index] ?? Lesson(),

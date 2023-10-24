@@ -32,6 +32,7 @@ import 'package:lms_flutter_app/Views/VideoView/PDFViewPage.dart';
 import 'package:lms_flutter_app/Views/VideoView/VideoChipherPage.dart';
 import 'package:lms_flutter_app/Views/VideoView/VideoPlayerPage.dart';
 import 'package:lms_flutter_app/Views/VideoView/VimeoPlayerPage.dart';
+import 'package:lms_flutter_app/Views/VideoView/from_iframe.dart';
 import 'package:lms_flutter_app/Views/VideoView/from_youtube.dart';
 import 'package:lms_flutter_app/utils/CustomAlertBox.dart';
 import 'package:lms_flutter_app/utils/CustomExpansionTileCard.dart';
@@ -686,13 +687,36 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                                       isScrollControlled: true,
                                     );
                                     context.loaderOverlay.hide();
-                                  } else if (lessons?[index].host == "URL" ||
-                                      lessons?[index].host == "Iframe") {
+                                  } else if (lessons?[index].host == "URL") {
                                     videoUrl = lessons?[index].videoUrl;
                                     Get.bottomSheet(
                                       PlayVideoFromNetwork(
                                         source: videoUrl,
                                       ),
+                                      // VideoPlayerPage(
+                                      //   "network",
+                                      //   lesson: lessons?[index] ?? Lesson(),
+                                      //   videoID: videoUrl,
+                                      // ),
+                                      backgroundColor: Colors.black,
+                                      isScrollControlled: true,
+                                    );
+                                    context.loaderOverlay.hide();
+                                  } else if (lessons?[index].host == "Iframe") {
+                                    videoUrl = lessons?[index].videoUrl;
+                                    log('PlayVideoFromIframe',
+                                        name: 'PlayVideoFromIframe');
+                                    Get.bottomSheet(
+                                      PlayVideoFromIframe(
+                                        source: videoUrl,
+                                      ),
+
+                                      // Get.bottomSheet(
+                                      //   VimeoPlayerPage(
+                                      //     lesson: lessons?[index] ?? Lesson(),
+                                      //     videoId: videoUrl,
+                                      //   ),
+
                                       // VideoPlayerPage(
                                       //   "network",
                                       //   lesson: lessons?[index] ?? Lesson(),
