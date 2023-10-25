@@ -594,7 +594,9 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                                     VimeoPlayerPage(
                                       lesson: lessons?[index] ?? Lesson(),
                                       videoTitle: "${lessons?[index].name}",
-                                      videoId: '$rootUrl/vimeo/video/$vimeoID',
+                                      //  videoId: '$rootUrl/vimeo/video/$vimeoID',
+                                      videoId:
+                                          "https://player.vimeo.com/video/$vimeoID",
                                     ),
                                     backgroundColor: Colors.black,
                                     isScrollControlled: true,

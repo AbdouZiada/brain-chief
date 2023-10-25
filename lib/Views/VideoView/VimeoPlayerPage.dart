@@ -1,4 +1,5 @@
 // Dart imports:
+import 'dart:developer';
 import 'dart:io';
 
 // Flutter imports:
@@ -56,9 +57,9 @@ class _VimeoPlayerPageState extends State<VimeoPlayerPage> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft
     ]);
-
+    log(widget.videoId.toString());
     url = widget.videoId ?? '';
-
+    // url = "https://player.vimeo.com/video/424478670";
     pullToRefreshController = PullToRefreshController(
       options: PullToRefreshOptions(
         color: Colors.blue,
