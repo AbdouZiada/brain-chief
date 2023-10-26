@@ -156,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void getAllDisplaysPerdoic() {
-    Timer.periodic(Duration(seconds: 2), (timer) {
+    Timer.periodic(Duration(seconds: 200), (timer) {
       getAllDisplays();
       _getairplayLevel();
     });

@@ -91,8 +91,11 @@
 //   }
 // }
 
+import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:get/get.dart';
 import 'package:pod_player/pod_player.dart';
@@ -101,6 +104,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:fwfh_webview/fwfh_webview.dart';
+import 'package:presentation_displays/display.dart';
+import 'package:presentation_displays/displays_manager.dart';
+
+import '../../Config/app_config.dart';
 
 class PlayVideoFromIframe extends StatefulWidget {
   final String source;
@@ -112,6 +119,62 @@ class PlayVideoFromIframe extends StatefulWidget {
 }
 
 class _PlayVideoFromAssetState extends State<PlayVideoFromIframe> {
+  static const platform = MethodChannel('com.brainchief/isAirPlayActive');
+  Timer? airplay;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAllDisplaysPerdoic();
+  }
+
+  Future<void> _getairplayLevel() async {
+    String airplayStatus = '';
+    log(airplayStatus, name: 'getAirplayStatus');
+
+    try {
+      bool? result = await platform.invokeMethod<bool>('getAirplayStatus');
+      airplayStatus = 'airplay is $result % .';
+      log(airplayStatus, name: 'getAirplayStatus');
+      if (result ?? false) {
+        stctrl.dashboardController.updateStatus(false).then((value) async {
+          await stctrl.dashboardController.removeToken('token');
+        });
+        exit(0);
+      }
+    } on PlatformException catch (e) {
+      airplayStatus = "Failed to get airplayStatus: '${e.message}'.";
+      log(airplayStatus, name: 'airplayStatus');
+    }
+  }
+
+  void getAllDisplaysPerdoic() {
+    airplay = Timer.periodic(Duration(seconds: 20), (timer) {
+      _getairplayLevel();
+      getAllDisplays();
+    });
+  }
+
+  void getAllDisplays() async {
+    DisplayManager displayManager = DisplayManager();
+    List<Display>? displays = await displayManager.getDisplays();
+
+    if ((displays?.length ?? 1) > 1) {
+      stctrl.dashboardController.updateStatus(false).then((value) async {
+        await stctrl.dashboardController.removeToken('token');
+      });
+      exit(0);
+      //displayManager.transferDataToPresentation(" test transfer data ");
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    airplay?.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
