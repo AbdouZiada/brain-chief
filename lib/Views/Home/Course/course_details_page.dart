@@ -173,12 +173,12 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                   TabBar(
                     labelColor: Colors.white,
                     tabs: _tabx.myTabs,
-                    unselectedLabelColor: AppStyles.unSelectedTabTextColor,
+                    unselectedLabelColor:Colors.black,
                     controller: _tabx.controller,
                     indicator: Get.theme.tabBarTheme.indicator,
                     automaticIndicatorColorAdjustment: true,
                     isScrollable: false,
-                    labelStyle: Get.textTheme.titleSmall,
+                    labelStyle: Get.textTheme.titleSmall!.copyWith(color: Colors.black),
                     unselectedLabelStyle: Get.textTheme.titleSmall,
                   ),
                   Expanded(
@@ -216,7 +216,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                 padding: EdgeInsets.fromLTRB(0, percentageHeight * 3, 0, 0),
                 child: HtmlWidget(
                   '''
-                    ${controller.courseDetails.value.about?['${stctrl.code.value}'] ?? "${controller.courseDetails.value.about?['en']}"}
+                    ${controller.courseDetails.value.about?['${stctrl.code.value}'] ?? "${controller.courseDetails.value.about?['en']??''}"}
                     ''',
                   customStylesBuilder: (element) {
                     if (element.classes.contains('foo')) {
@@ -245,7 +245,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                 padding: EdgeInsets.fromLTRB(0, percentageHeight * 3, 0, 0),
                 child: HtmlWidget(
                   '''
-                    ${controller.courseDetails.value.outcomes?['${stctrl.code.value}'] ?? "${controller.courseDetails.value.outcomes?['en']}" ?? "${controller.courseDetails.value.outcomes?['en']}"}
+                    ${controller.courseDetails.value.outcomes?['${stctrl.code.value}'] ?? "${controller.courseDetails.value.outcomes?['en']??''}" ?? "${controller.courseDetails.value.outcomes?['en']??''}"}
                     ''',
                   customStylesBuilder: (element) {
                     if (element.classes.contains('foo')) {
@@ -487,7 +487,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                 key: expansionTileKey,
                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
                 onExpansionChanged: (isExpanded) {
-                  if (isExpanded) _scrollToSelectedContent(expansionTileKey);
+              //    if (isExpanded) _scrollToSelectedContent(expansionTileKey);
                 },
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -596,7 +596,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                                       videoTitle: "${lessons?[index].name}",
                                       //  videoId: '$rootUrl/vimeo/video/$vimeoID',
                                       videoId:
-                                          "https://player.vimeo.com/video/$vimeoID",
+                                          "$vimeoID",
                                     ),
                                     backgroundColor: Colors.black,
                                     isScrollControlled: true,

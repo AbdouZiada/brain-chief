@@ -221,9 +221,64 @@ class RegisterPage extends GetView<DashboardController> {
                     ),
                   ),
                   onTap: () async {
-                    await controller.fetchUserRegister();
+              if(controller.registerEmail.text.isEmpty||(!controller.registerEmail.text.isEmail)) {
+                Get.snackbar(
+"البريد الإلكتروني خطاء",
+                  "",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  borderRadius: 5,
+                );
+                return ;
+              }
+              if(controller.registerName.text.isEmpty) {
+                Get.snackbar(
+                  " خطاء في أسم المستخدم ",
+                  "",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  borderRadius: 5,
+                );
+                return ;}
+              if(controller.registerPassword.text.isEmpty) {
+                Get.snackbar(
+                  " خطاء في كلمة المرور ",
+                  "",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  borderRadius: 5,
+                );
+                return ;}
+              if(controller.registerConfirmPassword.text.isEmpty) {
+                Get.snackbar(
+                  " خطاء في تأكيد كلمة المرور "
+                  ,"",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  borderRadius: 5,
+                );
+                return ;}
+              if(controller.registerPassword.text!=controller.registerConfirmPassword.text) {
+                Get.snackbar(
+                  " كلمة السر وتأكيد غير مطابقتان ",
+                  "",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  borderRadius: 5,
+                );
+                return ;}
+
+
+
+
+              await controller.fetchUserRegister();}
                     //  await controller.fetchUserLogin();
-                  },
+
                 ),
               ),
               Center(

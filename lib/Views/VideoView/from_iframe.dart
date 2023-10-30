@@ -89,13 +89,70 @@
 //         ),
 //       );
 //   }
+//
+//
+//                   widget.source.contains("<iframe")?
+//                   HtmlWidget(
+//                     '''
+//
+// ${widget.source}
+// <script>
+//
+// document.addEventListener("webkitplaybacktargetavailabilitychanged", function(event) {
+//     if (event.webkitPlaybackTargetAvailability === "available") {
+//         var iframe = document.querySelector("iframe");
+//         if (iframe) {
+//             iframe.parentNode.removeChild(iframe);
+//         }
+//     } else {
+//
+//     }
+// });
+//
+// </script>
+//
+// ''',
+//                     onTapImage: (_) {},
+//                     onTapUrl: (_) async {
+//                       return Future.value(false);
+//                     },
+//                     factoryBuilder: () => MyWidgetFactory(),
+//                   ):  HtmlWidget(
+//                     '''
+// <iframe src="${widget.source}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Best of Dolby Vision 12K HDR 120fps"></iframe>
+//
+// <script>
+//
+// document.addEventListener("webkitplaybacktargetavailabilitychanged", function(event) {
+//     if (event.webkitPlaybackTargetAvailability === "available") {
+//         var iframe = document.querySelector("iframe");
+//         if (iframe) {
+//             iframe.parentNode.removeChild(iframe);
+//         }
+//     } else {
+//
+//     }
+// });
+//
+// </script>
+//
+// ''',
+//                     onTapImage: (_) {},
+//                     onTapUrl: (_) async {
+//                       return Future.value(false);
+//                     },
+//                     factoryBuilder: () => MyWidgetFactory(),
+//                   ),
+//
 // }
+
 
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:get/get.dart';
 import 'package:pod_player/pod_player.dart';
@@ -106,7 +163,8 @@ import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart
 import 'package:fwfh_webview/fwfh_webview.dart';
 import 'package:presentation_displays/display.dart';
 import 'package:presentation_displays/displays_manager.dart';
-
+import 'package:universal_html/html.dart' as html;
+import 'package:universal_html/parsing.dart' as parser;
 import '../../Config/app_config.dart';
 
 class PlayVideoFromIframe extends StatefulWidget {
@@ -121,13 +179,102 @@ class PlayVideoFromIframe extends StatefulWidget {
 class _PlayVideoFromAssetState extends State<PlayVideoFromIframe> {
   static const platform = MethodChannel('com.brainchief/isAirPlayActive');
   Timer? airplay;
+  final GlobalKey webViewKey = GlobalKey();
+  late final PodPlayerController controller;
+
+  InAppWebViewController? webViewController;
+  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
+      crossPlatform: InAppWebViewOptions(
+        useShouldOverrideUrlLoading: true,
+        mediaPlaybackRequiresUserGesture: false,
+      ),
+      android: AndroidInAppWebViewOptions(
+        useHybridComposition: true,
+      ),
+      ios: IOSInAppWebViewOptions(
+        allowsInlineMediaPlayback: true,
+      ));
+
+  PullToRefreshController? pullToRefreshController;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft
+    ]);
+if (  widget.source.contains("www.youtube"))  {
+ // final htmlDocument = parser.parseHtmlDocument
+ final htmlDocument = parser.parseHtmlDocument(
+      '${widget.source.toString()}');
+//log(widget.source);
+  log('GETTTEEE${(htmlDocument.getElementsByTagName('iframe').first as html.IFrameElement).src}');
+
+
+   //   var ytb = (str.substring(startIndex + start.length, endIndex)); // https:/
+var ytb = (htmlDocument.getElementsByTagName('iframe').first as html.IFrameElement).src;
+  controller = PodPlayerController(
+    playVideoFrom: PlayVideoFrom.youtube(ytb!),
+    podPlayerConfig: const PodPlayerConfig(
+      videoQualityPriority: [720, 360],
+      autoPlay: false,
+    ),
+  )
+    ..initialise();
+}
+
+if( widget.source.contains("player.vimeo.com")){
+
+  LoadVimeo();
+}
+
+    // url = "https://player.vimeo.com/video/424478670";
+    pullToRefreshController = PullToRefreshController(
+      options: PullToRefreshOptions(
+        color: Colors.blue,
+      ),
+      onRefresh: () async {
+        if (Platform.isAndroid) {
+          webViewController?.reload();
+        } else if (Platform.isIOS) {
+          webViewController?.loadUrl(
+              urlRequest: URLRequest(url: await webViewController?.getUrl()));
+        }
+      },
+    );
+
     getAllDisplaysPerdoic();
   }
+void LoadVimeo() async{
+ // final urls = await PodPlayerController.getVimeoUrls('518228118');
+ // setState(() => isLoading = false);
 
+  final htmlDocument = parser.parseHtmlDocument(
+      '${widget.source.toString()}');
+//log(widget.source);
+  log('GETTTEEE${(htmlDocument.getElementsByTagName('iframe').first as html.IFrameElement).src}');
+
+
+  var str ='${(htmlDocument.getElementsByTagName('iframe').first as html.IFrameElement).src}';
+  const start = 'video/';
+  const end = '?';
+
+  final startIndex = str.indexOf(start);
+  final endIndex = str.indexOf(end, startIndex + start.length);
+  var vim = (str.substring(startIndex + start.length, endIndex));
+
+  controller = PodPlayerController(
+    playVideoFrom: PlayVideoFrom.vimeo(vim),
+    podPlayerConfig: const PodPlayerConfig(
+      videoQualityPriority: [360],
+    ),
+  )..initialise();
+
+
+  }
   Future<void> _getairplayLevel() async {
     String airplayStatus = '';
     log(airplayStatus, name: 'getAirplayStatus');
@@ -149,7 +296,7 @@ class _PlayVideoFromAssetState extends State<PlayVideoFromIframe> {
   }
 
   void getAllDisplaysPerdoic() {
-    airplay = Timer.periodic(Duration(seconds: 20), (timer) {
+    airplay = Timer.periodic(Duration(seconds:2), (timer) {
       _getairplayLevel();
       getAllDisplays();
     });
@@ -166,12 +313,17 @@ class _PlayVideoFromAssetState extends State<PlayVideoFromIframe> {
       exit(0);
       //displayManager.transferDataToPresentation(" test transfer data ");
     }
+
+
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+controller.dispose();
+
     airplay?.cancel();
   }
 
@@ -181,40 +333,130 @@ class _PlayVideoFromAssetState extends State<PlayVideoFromIframe> {
       // appBar: AppBar(title: const Text('Play video from Netwok')),
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Stack(
+        child: OrientationBuilder(builder: (context, orientation) {
+      if (orientation == Orientation.portrait) {
+
+       return Stack(
           children: [
             Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  HtmlWidget(
-                    '''
+                child:Container(child:
+            widget.source.contains("www.youtube") ?   PodVideoPlayer(
+              controller: controller,
+             // videoThumbnail: const DecorationImage(
+               // image: NetworkImage(
+                 // 'https://images.unsplash.com/photo-1569317002804-ab77bcf1bce4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8dW5zcGxhc2h8ZW58MHx8MHx8&w=1000&q=80',
+                // ),
+                //fit: BoxFit.cover,
+             // ),
+            ):  widget.source.contains("player.vimeo.com") ?Container(
+child      :  PodVideoPlayer(
+  controller: controller,
+  // videoThumbnail: const DecorationImage(
+  //   image: NetworkImage(
+  //     'https://images.unsplash.com/photo-1569317002804-ab77bcf1bce4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8dW5zcGxhc2h8ZW58MHx8MHx8&w=1000&q=80',
+  //   ),
+  //   fit: BoxFit.cover,
+  // ),
+)  ,
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="${widget.source}&autoplay=1&title=0&byline=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; " allowfullscreen></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
-<script>
-document.addEventListener("webkitplaybacktargetavailabilitychanged", function(event) {
-    if (event.webkitPlaybackTargetAvailability === "available") {
-        var iframe = document.querySelector("iframe");
-        if (iframe) {
-            iframe.parentNode.removeChild(iframe);
-        }
-    } else {
-     
-    }
-});
+            ):  InAppWebView(
+                  key: webViewKey,
+                  initialData: InAppWebViewInitialData(data:
+                  '''
+                                      <style>
+                                      iframe{
+                                      width:100%;
+                                 height:100%;
+                                 broder:none;
+                                 padding:0;
+                                 margin:0;
+                                      } 
+                                      </style>      
+ ${widget.source}
+ <script>
+ 
+ document.addEventListener("webkitplaybacktargetavailabilitychanged", function(event) {
+     if (event.webkitPlaybackTargetAvailability === "available") {
+         var iframe = document.querySelector("iframe");
+         if (iframe) {
+             iframe.parentNode.removeChild(iframe);
+         }
+     } else {
+      
+     }
+ });
+ 
+ </script>
 
-</script>
+                      
+                      ''',encoding: "utf-8",mimeType: "text/html"),
+                  initialOptions: options,
+                  pullToRefreshController:
+                  pullToRefreshController,
+                  onWebViewCreated: (controller) {
+                    webViewController = controller;
+                  },
+                  onLoadStart: (controller, url) {
+                  },
+                  androidOnPermissionRequest:
+                      (controller, origin, resources) async {
+                    return PermissionRequestResponse(
+                        resources: resources,
+                        action:
+                        PermissionRequestResponseAction
+                            .GRANT);
+                  },
+                  shouldOverrideUrlLoading:
+                      (controller, navigationAction) async {
+                    var uri = navigationAction.request.url;
 
-''',
-                    onTapImage: (_) {},
-                    onTapUrl: (_) async {
-                      return Future.value(false);
-                    },
-                    factoryBuilder: () => MyWidgetFactory(),
-                  ),
-                ],
-              ),
+                    if (![
+                      "http",
+                      "https",
+                      "file",
+                      "chrome",
+                      "data",
+                      "javascript",
+                      "about"
+                    ].contains(uri?.scheme)) {
+                      // ignore: deprecated_member_use
+
+                      // and cancel the request
+
+                    }
+
+                    return NavigationActionPolicy.ALLOW;
+                  },
+                  onLoadStop: (controller, url) async {
+                    pullToRefreshController?.endRefreshing();
+                  },
+                  onLoadError:
+                      (controller, url, code, message) {
+                    pullToRefreshController?.endRefreshing();
+                  },
+                  onProgressChanged: (controller, progress) {
+                    if (progress == 100) {
+                      pullToRefreshController
+                          ?.endRefreshing();
+                    }
+
+                  },
+                  onUpdateVisitedHistory:
+                      (controller, url, androidIsReload) {
+
+                  },
+                  onConsoleMessage:
+                      (controller, consoleMessage) async {
+
+                  },
+                  onCloseWindow: (controller) {},
+                ),
+                  height: 240,)
+
             ),
+
+
+
             Positioned(
               top: 30,
               left: 5,
@@ -222,11 +464,143 @@ document.addEventListener("webkitplaybacktargetavailabilitychanged", function(ev
                 onPressed: () => Get.back(),
                 icon: Icon(Icons.cancel, color: Colors.white),
               ),
-            ),
+            )
+
+
           ],
-        ),
-      ),
-    );
+        );
+        }else {
+        return Stack(
+          children: [
+
+        widget.source.contains("www.youtube") ?   PodVideoPlayer(
+          controller: controller,
+          videoThumbnail: const DecorationImage(
+            image: NetworkImage(
+              'https://images.unsplash.com/photo-1569317002804-ab77bcf1bce4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8dW5zcGxhc2h8ZW58MHx8MHx8&w=1000&q=80',
+            ),
+            fit: BoxFit.cover,
+          ),
+        ):  widget.source.contains("player.vimeo.com") ?Container(
+          child      :  PodVideoPlayer(
+            controller: controller,
+            videoThumbnail: const DecorationImage(
+              image: NetworkImage(
+                'https://images.unsplash.com/photo-1569317002804-ab77bcf1bce4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8dW5zcGxhc2h8ZW58MHx8MHx8&w=1000&q=80',
+              ),
+              fit: BoxFit.cover,
+            ),
+          )  ,
+
+        ):
+
+          InAppWebView(
+            key: webViewKey,
+            initialData: InAppWebViewInitialData(data:
+            '''
+            
+                                      <style>
+                                      iframe{
+                                      width:100%;
+                                 height:100%;
+                                border:none; 
+                                      } 
+                                      </style>      
+ ${widget.source}
+ <script>
+ 
+ document.addEventListener("webkitplaybacktargetavailabilitychanged", function(event) {
+     if (event.webkitPlaybackTargetAvailability === "available") {
+     
+     
+         var iframe = document.querySelector("iframe");
+          
+         
+     } else {
+      
+     }
+ });
+ 
+ </script>
+
+                      
+                      ''', encoding: "utf-8", mimeType: "text/html"),
+            initialOptions: options,
+            pullToRefreshController:
+            pullToRefreshController,
+            onWebViewCreated: (controller) {
+              webViewController = controller;
+            },
+            onLoadStart: (controller, url) {},
+            androidOnPermissionRequest:
+                (controller, origin, resources) async {
+              return PermissionRequestResponse(
+                  resources: resources,
+                  action:
+                  PermissionRequestResponseAction
+                      .GRANT);
+            },
+            shouldOverrideUrlLoading:
+                (controller, navigationAction) async {
+              var uri = navigationAction.request.url;
+
+              if (![
+                "http",
+                "https",
+                "file",
+                "chrome",
+                "data",
+                "javascript",
+                "about"
+              ].contains(uri?.scheme)) {
+                // ignore: deprecated_member_use
+
+                // and cancel the request
+
+              }
+
+              return NavigationActionPolicy.ALLOW;
+            },
+            onLoadStop: (controller, url) async {
+              pullToRefreshController?.endRefreshing();
+            },
+            onLoadError:
+                (controller, url, code, message) {
+              pullToRefreshController?.endRefreshing();
+            },
+            onProgressChanged: (controller, progress) {
+              if (progress == 100) {
+                pullToRefreshController
+                    ?.endRefreshing();
+              }
+            },
+            onUpdateVisitedHistory:
+                (controller, url, androidIsReload) {
+
+            },
+            onConsoleMessage:
+                (controller, consoleMessage) async {
+
+            },
+            onCloseWindow: (controller) {},
+
+          ),
+
+
+            Positioned(
+              top: 29,
+              left: 4,
+              child: IconButton(
+                onPressed: () => Get.back(),
+                icon: Icon(Icons.cancel, color: Colors.black),
+              ),
+            )
+
+
+          ],
+        );
+      }})));
+
   }
 
   void snackBar(String text) {

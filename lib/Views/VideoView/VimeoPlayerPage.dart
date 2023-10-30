@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:lms_flutter_app/Controller/lesson_controller.dart';
 import 'package:lms_flutter_app/Model/Course/Lesson.dart';
 import 'package:lms_flutter_app/utils/widgets/connectivity_checker_widget.dart';
+import 'package:pod_player/pod_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // Project imports:
@@ -32,6 +33,7 @@ class _VimeoPlayerPageState extends State<VimeoPlayerPage> {
 
   final GlobalKey webViewKey = GlobalKey();
 
+  late final PodPlayerController controller;
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
@@ -74,12 +76,25 @@ class _VimeoPlayerPageState extends State<VimeoPlayerPage> {
       },
     );
     super.initState();
+    LoadVimeo();
   }
 
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     super.dispose();
+    controller.dispose();
+  }
+  void LoadVimeo() async{
+
+    controller = PodPlayerController(
+      playVideoFrom: PlayVideoFrom.vimeo(widget.videoId!),
+      podPlayerConfig: const PodPlayerConfig(
+        videoQualityPriority: [360],
+      ),
+    )..initialise();
+
+
   }
 
   void reload() {
@@ -91,253 +106,269 @@ class _VimeoPlayerPageState extends State<VimeoPlayerPage> {
     return ConnectionCheckerWidget(
       child: SafeArea(
         child: OrientationBuilder(builder: (context, orientation) {
-          if (orientation == Orientation.portrait) {
-            return WillPopScope(
-              onWillPop: () async => true,
-              child: Scaffold(
-                backgroundColor: Colors.black,
-                body: Stack(
-                  children: [
-                    Center(
-                      child: SizedBox(
-                        height: 240,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Expanded(
-                              child: Stack(
-                                children: [
-                                  InAppWebView(
-                                    key: webViewKey,
-                                    initialUrlRequest:
-                                        URLRequest(url: Uri.parse(url)),
-                                    initialOptions: options,
-                                    pullToRefreshController:
-                                        pullToRefreshController,
-                                    onWebViewCreated: (controller) {
-                                      webViewController = controller;
-                                    },
-                                    onLoadStart: (controller, url) {
-                                      setState(() {
-                                        this.url = url.toString();
-                                        urlController.text = this.url;
-                                      });
-                                    },
-                                    androidOnPermissionRequest:
-                                        (controller, origin, resources) async {
-                                      return PermissionRequestResponse(
-                                          resources: resources,
-                                          action:
-                                              PermissionRequestResponseAction
-                                                  .GRANT);
-                                    },
-                                    shouldOverrideUrlLoading:
-                                        (controller, navigationAction) async {
-                                      var uri = navigationAction.request.url;
+          return Scaffold(backgroundColor: Colors.black,body:
+         Stack(children: [
 
-                                      if (![
-                                        "http",
-                                        "https",
-                                        "file",
-                                        "chrome",
-                                        "data",
-                                        "javascript",
-                                        "about"
-                                      ].contains(uri?.scheme)) {
-                                        // ignore: deprecated_member_use
-                                        if (await canLaunch(url)) {
-                                          // Launch the App
-                                          // ignore: deprecated_member_use
-                                          await launch(
-                                            url,
-                                          );
-                                          // and cancel the request
-                                          return NavigationActionPolicy.CANCEL;
-                                        }
-                                      }
-
-                                      return NavigationActionPolicy.ALLOW;
-                                    },
-                                    onLoadStop: (controller, url) async {
-                                      pullToRefreshController?.endRefreshing();
-                                      setState(() {
-                                        this.url = url.toString();
-                                        urlController.text = this.url;
-                                      });
-                                    },
-                                    onLoadError:
-                                        (controller, url, code, message) {
-                                      pullToRefreshController?.endRefreshing();
-                                    },
-                                    onProgressChanged: (controller, progress) {
-                                      if (progress == 100) {
-                                        pullToRefreshController
-                                            ?.endRefreshing();
-                                      }
-                                      setState(() {
-                                        this.progress = progress / 100;
-                                        urlController.text = this.url;
-                                      });
-                                    },
-                                    onUpdateVisitedHistory:
-                                        (controller, url, androidIsReload) {
-                                      setState(() {
-                                        this.url = url.toString();
-                                        urlController.text = this.url;
-                                      });
-                                    },
-                                    onConsoleMessage:
-                                        (controller, consoleMessage) async {
-                                      if (widget.lesson != null) {
-                                        if (consoleMessage.message == "ended") {
-                                          await lessonController
-                                              .updateLessonProgress(
-                                                  widget.lesson?.id,
-                                                  widget.lesson?.courseId,
-                                                  1)
-                                              .then((value) {
-                                            Get.back();
-                                          });
-                                        }
-                                      }
-                                    },
-                                    onCloseWindow: (controller) {},
-                                  ),
-                                  progress < 1.0
-                                      ? LinearProgressIndicator(value: progress)
-                                      : Container(),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 30,
-                      left: 5,
-                      child: IconButton(
-                        onPressed: () => Get.back(),
-                        icon: Icon(
-                          Icons.cancel,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else {
-            return WillPopScope(
-              onWillPop: () async => true,
-              child: Scaffold(
-                backgroundColor: Colors.black,
-                body: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          InAppWebView(
-                            key: webViewKey,
-                            initialUrlRequest: URLRequest(url: Uri.parse(url)),
-                            initialOptions: options,
-                            pullToRefreshController: pullToRefreshController,
-                            onWebViewCreated: (controller) {
-                              webViewController = controller;
-                            },
-                            onLoadStart: (controller, url) {
-                              setState(() {
-                                this.url = url.toString();
-                                urlController.text = this.url;
-                              });
-                            },
-                            androidOnPermissionRequest:
-                                (controller, origin, resources) async {
-                              return PermissionRequestResponse(
-                                  resources: resources,
-                                  action:
-                                      PermissionRequestResponseAction.GRANT);
-                            },
-                            shouldOverrideUrlLoading:
-                                (controller, navigationAction) async {
-                              var uri = navigationAction.request.url;
-
-                              if (![
-                                "http",
-                                "https",
-                                "file",
-                                "chrome",
-                                "data",
-                                "javascript",
-                                "about"
-                              ].contains(uri?.scheme)) {
-                                // ignore: deprecated_member_use
-                                if (await canLaunch(url)) {
-                                  // Launch the App
-                                  // ignore: deprecated_member_use
-                                  await launch(
-                                    url,
-                                  );
-                                  // and cancel the request
-                                  return NavigationActionPolicy.CANCEL;
-                                }
-                              }
-
-                              return NavigationActionPolicy.ALLOW;
-                            },
-                            onLoadStop: (controller, url) async {
-                              pullToRefreshController?.endRefreshing();
-                              setState(() {
-                                this.url = url.toString();
-                                urlController.text = this.url;
-                              });
-                            },
-                            onLoadError: (controller, url, code, message) {
-                              pullToRefreshController?.endRefreshing();
-                            },
-                            onProgressChanged: (controller, progress) {
-                              if (progress == 100) {
-                                pullToRefreshController?.endRefreshing();
-                              }
-                              setState(() {
-                                this.progress = progress / 100;
-                                urlController.text = this.url;
-                              });
-                            },
-                            onUpdateVisitedHistory:
-                                (controller, url, androidIsReload) {
-                              setState(() {
-                                this.url = url.toString();
-                                urlController.text = this.url;
-                              });
-                            },
-                            onConsoleMessage:
-                                (controller, consoleMessage) async {
-                              if (widget.lesson != null) {
-                                if (consoleMessage.message == "ended") {
-                                  await lessonController
-                                      .updateLessonProgress(widget.lesson?.id,
-                                          widget.lesson?.courseId, 1)
-                                      .then((value) {
-                                    Get.back();
-                                  });
-                                }
-                              }
-                            },
-                            onCloseWindow: (controller) {},
+           Center(child: PodVideoPlayer(controller:controller ,),)
+    ,      Positioned(
+                        top: 30,
+                        left: 5,
+                        child: IconButton(
+                          onPressed: () => Get.back(),
+                          icon: Icon(
+                            Icons.cancel,
+                            color: Colors.white,
                           ),
-                          progress < 1.0
-                              ? LinearProgressIndicator(value: progress)
-                              : Container(),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
+         ],) ,);
+          // if (orientation == Orientation.portrait) {
+          //   return WillPopScope(
+          //     onWillPop: () async => true,
+          //     child: Scaffold(
+          //       backgroundColor: Colors.black,
+          //       body: Stack(
+          //         children: [
+          //           Center(
+          //             child: SizedBox(
+          //               height: 240,
+          //               child: Column(
+          //                 mainAxisAlignment: MainAxisAlignment.center,
+          //                 children: <Widget>[
+          //                   Expanded(
+          //                     child: Stack(
+          //                       children: [
+          //                         InAppWebView(
+          //                           key: webViewKey,
+          //                           initialUrlRequest:
+          //                               URLRequest(url: Uri.parse(url)),
+          //                           initialOptions: options,
+          //                           pullToRefreshController:
+          //                               pullToRefreshController,
+          //                           onWebViewCreated: (controller) {
+          //                             webViewController = controller;
+          //                           },
+          //                           onLoadStart: (controller, url) {
+          //                             setState(() {
+          //                               this.url = url.toString();
+          //                               urlController.text = this.url;
+          //                             });
+          //                           },
+          //                           androidOnPermissionRequest:
+          //                               (controller, origin, resources) async {
+          //                             return PermissionRequestResponse(
+          //                                 resources: resources,
+          //                                 action:
+          //                                     PermissionRequestResponseAction
+          //                                         .GRANT);
+          //                           },
+          //                           shouldOverrideUrlLoading:
+          //                               (controller, navigationAction) async {
+          //                             var uri = navigationAction.request.url;
+          //
+          //                             if (![
+          //                               "http",
+          //                               "https",
+          //                               "file",
+          //                               "chrome",
+          //                               "data",
+          //                               "javascript",
+          //                               "about"
+          //                             ].contains(uri?.scheme)) {
+          //                               // ignore: deprecated_member_use
+          //                               if (await canLaunch(url)) {
+          //                                 // Launch the App
+          //                                 // ignore: deprecated_member_use
+          //                                 await launch(
+          //                                   url,
+          //                                 );
+          //                                 // and cancel the request
+          //                                 return NavigationActionPolicy.CANCEL;
+          //                               }
+          //                             }
+          //
+          //                             return NavigationActionPolicy.ALLOW;
+          //                           },
+          //                           onLoadStop: (controller, url) async {
+          //                             pullToRefreshController?.endRefreshing();
+          //                             setState(() {
+          //                               this.url = url.toString();
+          //                               urlController.text = this.url;
+          //                             });
+          //                           },
+          //                           onLoadError:
+          //                               (controller, url, code, message) {
+          //                             pullToRefreshController?.endRefreshing();
+          //                           },
+          //                           onProgressChanged: (controller, progress) {
+          //                             if (progress == 100) {
+          //                               pullToRefreshController
+          //                                   ?.endRefreshing();
+          //                             }
+          //                             setState(() {
+          //                               this.progress = progress / 100;
+          //                               urlController.text = this.url;
+          //                             });
+          //                           },
+          //                           onUpdateVisitedHistory:
+          //                               (controller, url, androidIsReload) {
+          //                             setState(() {
+          //                               this.url = url.toString();
+          //                               urlController.text = this.url;
+          //                             });
+          //                           },
+          //                           onConsoleMessage:
+          //                               (controller, consoleMessage) async {
+          //                             if (widget.lesson != null) {
+          //                               if (consoleMessage.message == "ended") {
+          //                                 await lessonController
+          //                                     .updateLessonProgress(
+          //                                         widget.lesson?.id,
+          //                                         widget.lesson?.courseId,
+          //                                         1)
+          //                                     .then((value) {
+          //                                   Get.back();
+          //                                 });
+          //                               }
+          //                             }
+          //                           },
+          //                           onCloseWindow: (controller) {},
+          //                         ),
+          //                         progress < 1.0
+          //                             ? LinearProgressIndicator(value: progress)
+          //                             : Container(),
+          //                       ],
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           ),
+          //           Positioned(
+          //             top: 30,
+          //             left: 5,
+          //             child: IconButton(
+          //               onPressed: () => Get.back(),
+          //               icon: Icon(
+          //                 Icons.cancel,
+          //                 color: Colors.white,
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   );
+          // } else {
+          //   return WillPopScope(
+          //     onWillPop: () async => true,
+          //     child: Scaffold(
+          //       backgroundColor: Colors.black,
+          //       body: Column(
+          //         children: <Widget>[
+          //           Expanded(
+          //             child: Stack(
+          //               children: [
+          //                 InAppWebView(
+          //                   key: webViewKey,
+          //                   initialUrlRequest: URLRequest(url: Uri.parse(url)),
+          //                   initialOptions: options,
+          //                   pullToRefreshController: pullToRefreshController,
+          //                   onWebViewCreated: (controller) {
+          //                     webViewController = controller;
+          //                   },
+          //                   onLoadStart: (controller, url) {
+          //                     setState(() {
+          //                       this.url = url.toString();
+          //                       urlController.text = this.url;
+          //                     });
+          //                   },
+          //                   androidOnPermissionRequest:
+          //                       (controller, origin, resources) async {
+          //                     return PermissionRequestResponse(
+          //                         resources: resources,
+          //                         action:
+          //                             PermissionRequestResponseAction.GRANT);
+          //                   },
+          //                   shouldOverrideUrlLoading:
+          //                       (controller, navigationAction) async {
+          //                     var uri = navigationAction.request.url;
+          //
+          //                     if (![
+          //                       "http",
+          //                       "https",
+          //                       "file",
+          //                       "chrome",
+          //                       "data",
+          //                       "javascript",
+          //                       "about"
+          //                     ].contains(uri?.scheme)) {
+          //                       // ignore: deprecated_member_use
+          //                       if (await canLaunch(url)) {
+          //                         // Launch the App
+          //                         // ignore: deprecated_member_use
+          //                         await launch(
+          //                           url,
+          //                         );
+          //                         // and cancel the request
+          //                         return NavigationActionPolicy.CANCEL;
+          //                       }
+          //                     }
+          //
+          //                     return NavigationActionPolicy.ALLOW;
+          //                   },
+          //                   onLoadStop: (controller, url) async {
+          //                     pullToRefreshController?.endRefreshing();
+          //                     setState(() {
+          //                       this.url = url.toString();
+          //                       urlController.text = this.url;
+          //                     });
+          //                   },
+          //                   onLoadError: (controller, url, code, message) {
+          //                     pullToRefreshController?.endRefreshing();
+          //                   },
+          //                   onProgressChanged: (controller, progress) {
+          //                     if (progress == 100) {
+          //                       pullToRefreshController?.endRefreshing();
+          //                     }
+          //                     setState(() {
+          //                       this.progress = progress / 100;
+          //                       urlController.text = this.url;
+          //                     });
+          //                   },
+          //                   onUpdateVisitedHistory:
+          //                       (controller, url, androidIsReload) {
+          //                     setState(() {
+          //                       this.url = url.toString();
+          //                       urlController.text = this.url;
+          //                     });
+          //                   },
+          //                   onConsoleMessage:
+          //                       (controller, consoleMessage) async {
+          //                     if (widget.lesson != null) {
+          //                       if (consoleMessage.message == "ended") {
+          //                         await lessonController
+          //                             .updateLessonProgress(widget.lesson?.id,
+          //                                 widget.lesson?.courseId, 1)
+          //                             .then((value) {
+          //                           Get.back();
+          //                         });
+          //                       }
+          //                     }
+          //                   },
+          //                   onCloseWindow: (controller) {},
+          //                 ),
+          //                 progress < 1.0
+          //                     ? LinearProgressIndicator(value: progress)
+          //                     : Container(),
+          //               ],
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   );
+          // }
         }),
       ),
     );

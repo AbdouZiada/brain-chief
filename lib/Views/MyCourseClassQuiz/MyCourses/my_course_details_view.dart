@@ -676,7 +676,7 @@ class _MyCourseDetailsViewState extends State<MyCourseDetailsView> {
                                         lesson: lessons?[index] ?? Lesson(),
                                         videoTitle: "${lessons?[index].name}",
                                         videoId:
-                                            "https://player.vimeo.com/video/$vimeoID",
+                                            "$vimeoID",
                                         // videoId:
                                         //     '$rootUrl/vimeo/video/$vimeoID',
                                       ),

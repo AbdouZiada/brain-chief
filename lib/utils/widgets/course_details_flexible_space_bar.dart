@@ -131,7 +131,7 @@ class CourseDetailsFlexilbleSpaceBar extends StatelessWidget {
                                 Get.bottomSheet(
                                   VimeoPlayerPage(
                                     videoTitle: "${course.title}",
-                                    videoId: '$rootUrl/vimeo/video/$vimeoID',
+                                    videoId: '$vimeoID',
                                   ),
                                   backgroundColor: Colors.black,
                                   isScrollControlled: true,

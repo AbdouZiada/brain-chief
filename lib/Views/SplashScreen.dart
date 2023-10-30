@@ -103,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen> {
     log(build.toString(), name: 'remote');
     log(update.toString(), name: 'remote');
 
-    if (build < 5) {
+    if (false) {
       log('yes', name: 'remote');
       await Get.defaultDialog(
         title: "تنبيه",
@@ -170,7 +170,7 @@ class _SplashScreenState extends State<SplashScreen> {
       !_isOpen
           ? Get.dialog(
               DialogContent(
-                text: 'لا يمكن استخدام اكتر من شاشة اثناء استخدام التطبيق',
+                text: 'لا يمكن استخدام اكتر من شاشة اثناء \n استخدام التطبيق',
               ),
               barrierDismissible: false,
             ).then((value) => _isOpen = false)
@@ -183,7 +183,7 @@ class _SplashScreenState extends State<SplashScreen> {
     !_isOpen
         ? Get.dialog(
             DialogContent(
-              text: 'تصوير الشاشة ممنوع لانه يخالف قواعد استخدام \nالتطبيق ',
+              text: 'تصوير الشاشة ممنوع لانه يخالف قواعد \n استخدام التطبيق ',
             ),
             barrierDismissible: false,
           ).then((value) => _isOpen = false)
@@ -195,7 +195,7 @@ class _SplashScreenState extends State<SplashScreen> {
     !_isOpen
         ? Get.dialog(
             DialogContent(
-              text: '  تسجيل الشاشة ممنوع لانه يخالف قواعد استخدام \nالتطبيق',
+              text: '  تسجيل الشاشة ممنوع لانه يخالف قواعد \n استخدام التطبيق',
             ),
             barrierDismissible: false,
           ).then((value) => _isOpen = false)
@@ -313,7 +313,7 @@ class _DialogContentState extends State<DialogContent> {
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'cairo',
-                  fontSize: 24,
+                  fontSize: 28,
                 ),
               ),
               Text(
@@ -322,16 +322,16 @@ class _DialogContentState extends State<DialogContent> {
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'cairo',
-                  fontSize: 16,
+                  fontSize: 18,
                 ),
               ),
               Text(
-                'يرجي اعادة تشغيل التطبيق لتتمكن من مواصلة استخدامه',
+                'يرجي اعادة تشغيل التطبيق لتتمكن من \n مواصلة استخدامه',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'cairo',
-                  fontSize: 16,
+                  fontSize: 20,
                 ),
               ),
             ],

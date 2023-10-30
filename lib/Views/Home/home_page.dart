@@ -306,172 +306,172 @@ class HomePage extends GetView<HomeController> {
                     }),
                   ),
 
-                  /// FEATURED CLASSES
-                  Container(
-                    margin: EdgeInsets.only(
-                      left: Get.locale == Locale('ar') ? 12 : 20,
-                      bottom: 14.72,
-                      right: Get.locale == Locale('ar') ? 20 : 12,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Texth1("${stctrl.lang["Featured Class"]}"),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        GestureDetector(
-                          child: sellAllText(),
-                          onTap: () {
-                            Get.to(() => AllClassView());
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(
-                        Get.locale == Locale('ar') ? 0 : 15,
-                        0,
-                        Get.locale == Locale('ar') ? 15 : 0,
-                        0),
-                    child: Obx(() {
-                      if (controller.isLoading.value)
-                        return LoadingSkeletonItemWidget();
-                      else {
-                        return Container(
-                          height: 200,
-                          child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: controller.allClassesList.length,
-                              separatorBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 18,
-                                );
-                              },
-                              padding: EdgeInsets.fromLTRB(
-                                  Get.locale == Locale('ar') ? 0 : 5,
-                                  0,
-                                  Get.locale == Locale('ar') ? 5 : 0,
-                                  0),
-                              physics: BouncingScrollPhysics(),
-                              itemBuilder: (BuildContext context, int index) {
-                                return SingleItemCardWidget(
-                                  showPricing: true,
-                                  image:
-                                      "$rootUrl/${controller.allClassesList[index].image}",
-                                  title: controller.allClassesList[index]
-                                          .title['${stctrl.code.value}'] ??
-                                      "${controller.allClassesList[index].title['en']}",
-                                  subTitle: controller
-                                      .allClassesList[index].user.name,
-                                  price: controller.allClassesList[index].price,
-                                  discountPrice: controller
-                                      .allClassesList[index].discountPrice,
-                                  onTap: () async {
-                                    final ClassController allCourseController =
-                                        Get.put(ClassController());
-                                    allCourseController.courseID.value =
-                                        controller.allClassesList[index].id;
-                                    allCourseController.getClassDetails();
-                                    Get.to(() => ClassDetailsPage());
-                                  },
-                                );
-                              }),
-                        );
-                      }
-                    }),
-                  ),
-
-                  /// FEATURED QUIZZES
-                  Container(
-                    margin: EdgeInsets.only(
-                      left: Get.locale == Locale('ar') ? 12 : 20,
-                      bottom: 14.72,
-                      right: Get.locale == Locale('ar') ? 20 : 12,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Texth1("${stctrl.lang["Featured Quizzes"]}"),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        GestureDetector(
-                          child: sellAllText(),
-                          onTap: () {
-                            Get.to(() => AllQuizView());
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(
-                        Get.locale == Locale('ar') ? 0 : 15,
-                        0,
-                        Get.locale == Locale('ar') ? 15 : 0,
-                        0),
-                    child: Obx(() {
-                      if (controller.isLoading.value)
-                        return LoadingSkeletonItemWidget();
-                      else {
-                        return Container(
-                          height: 200,
-                          child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: controller.allQuizzesList.length,
-                              separatorBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 18,
-                                );
-                              },
-                              padding: EdgeInsets.fromLTRB(
-                                  Get.locale == Locale('ar') ? 0 : 5,
-                                  0,
-                                  Get.locale == Locale('ar') ? 5 : 0,
-                                  0),
-                              physics: BouncingScrollPhysics(),
-                              itemBuilder: (BuildContext context, int index) {
-                                return SingleItemCardWidget(
-                                  showPricing: true,
-                                  image:
-                                      "$rootUrl/${controller.allQuizzesList[index].image}",
-                                  title: controller.allQuizzesList[index]
-                                          .title['${stctrl.code.value}'] ??
-                                      "${controller.allQuizzesList[index].title['en']}",
-                                  subTitle: controller
-                                      .allQuizzesList[index].user.name,
-                                  price: controller.allQuizzesList[index].price,
-                                  discountPrice: controller
-                                      .allQuizzesList[index].discountPrice,
-                                  onTap: () async {
-                                    context.loaderOverlay.show();
-                                    final QuizController allQuizController =
-                                        Get.put(QuizController());
-                                    allQuizController.courseID.value =
-                                        controller.allQuizzesList[index].id;
-
-                                    await allQuizController.getQuizDetails();
-
-                                    if (allQuizController.isQuizBought.value) {
-                                      await allQuizController
-                                          .getMyQuizDetails();
-                                      Get.to(() => MyQuizDetailsPageView());
-                                      context.loaderOverlay.hide();
-                                    } else {
-                                      Get.to(() => QuizDetailsPageView());
-                                      context.loaderOverlay.hide();
-                                    }
-                                  },
-                                );
-                              }),
-                        );
-                      }
-                    }),
-                  ),
+                  // /// FEATURED CLASSES
+                  // Container(
+                  //   margin: EdgeInsets.only(
+                  //     left: Get.locale == Locale('ar') ? 12 : 20,
+                  //     bottom: 14.72,
+                  //     right: Get.locale == Locale('ar') ? 20 : 12,
+                  //   ),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     mainAxisSize: MainAxisSize.min,
+                  //     children: [
+                  //       Texth1("${stctrl.lang["Featured Class"]}"),
+                  //       Expanded(
+                  //         child: Container(),
+                  //       ),
+                  //       GestureDetector(
+                  //         child: sellAllText(),
+                  //         onTap: () {
+                  //           Get.to(() => AllClassView());
+                  //         },
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
+                  // Container(
+                  //   margin: EdgeInsets.fromLTRB(
+                  //       Get.locale == Locale('ar') ? 0 : 15,
+                  //       0,
+                  //       Get.locale == Locale('ar') ? 15 : 0,
+                  //       0),
+                  //   child: Obx(() {
+                  //     if (controller.isLoading.value)
+                  //       return LoadingSkeletonItemWidget();
+                  //     else {
+                  //       return Container(
+                  //         height: 200,
+                  //         child: ListView.separated(
+                  //             scrollDirection: Axis.horizontal,
+                  //             itemCount: controller.allClassesList.length,
+                  //             separatorBuilder: (context, index) {
+                  //               return SizedBox(
+                  //                 width: 18,
+                  //               );
+                  //             },
+                  //             padding: EdgeInsets.fromLTRB(
+                  //                 Get.locale == Locale('ar') ? 0 : 5,
+                  //                 0,
+                  //                 Get.locale == Locale('ar') ? 5 : 0,
+                  //                 0),
+                  //             physics: BouncingScrollPhysics(),
+                  //             itemBuilder: (BuildContext context, int index) {
+                  //               return SingleItemCardWidget(
+                  //                 showPricing: true,
+                  //                 image:
+                  //                     "$rootUrl/${controller.allClassesList[index].image}",
+                  //                 title: controller.allClassesList[index]
+                  //                         .title['${stctrl.code.value}'] ??
+                  //                     "${controller.allClassesList[index].title['en']}",
+                  //                 subTitle: controller
+                  //                     .allClassesList[index].user.name,
+                  //                 price: controller.allClassesList[index].price,
+                  //                 discountPrice: controller
+                  //                     .allClassesList[index].discountPrice,
+                  //                 onTap: () async {
+                  //                   final ClassController allCourseController =
+                  //                       Get.put(ClassController());
+                  //                   allCourseController.courseID.value =
+                  //                       controller.allClassesList[index].id;
+                  //                   allCourseController.getClassDetails();
+                  //                   Get.to(() => ClassDetailsPage());
+                  //                 },
+                  //               );
+                  //             }),
+                  //       );
+                  //     }
+                  //   }),
+                  // ),
+                  //
+                  // /// FEATURED QUIZZES
+                  // Container(
+                  //   margin: EdgeInsets.only(
+                  //     left: Get.locale == Locale('ar') ? 12 : 20,
+                  //     bottom: 14.72,
+                  //     right: Get.locale == Locale('ar') ? 20 : 12,
+                  //   ),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     mainAxisSize: MainAxisSize.min,
+                  //     children: [
+                  //       Texth1("${stctrl.lang["Featured Quizzes"]}"),
+                  //       Expanded(
+                  //         child: Container(),
+                  //       ),
+                  //       GestureDetector(
+                  //         child: sellAllText(),
+                  //         onTap: () {
+                  //           Get.to(() => AllQuizView());
+                  //         },
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
+                  // Container(
+                  //   margin: EdgeInsets.fromLTRB(
+                  //       Get.locale == Locale('ar') ? 0 : 15,
+                  //       0,
+                  //       Get.locale == Locale('ar') ? 15 : 0,
+                  //       0),
+                  //   child: Obx(() {
+                  //     if (controller.isLoading.value)
+                  //       return LoadingSkeletonItemWidget();
+                  //     else {
+                  //       return Container(
+                  //         height: 200,
+                  //         child: ListView.separated(
+                  //             scrollDirection: Axis.horizontal,
+                  //             itemCount: controller.allQuizzesList.length,
+                  //             separatorBuilder: (context, index) {
+                  //               return SizedBox(
+                  //                 width: 18,
+                  //               );
+                  //             },
+                  //             padding: EdgeInsets.fromLTRB(
+                  //                 Get.locale == Locale('ar') ? 0 : 5,
+                  //                 0,
+                  //                 Get.locale == Locale('ar') ? 5 : 0,
+                  //                 0),
+                  //             physics: BouncingScrollPhysics(),
+                  //             itemBuilder: (BuildContext context, int index) {
+                  //               return SingleItemCardWidget(
+                  //                 showPricing: true,
+                  //                 image:
+                  //                     "$rootUrl/${controller.allQuizzesList[index].image}",
+                  //                 title: controller.allQuizzesList[index]
+                  //                         .title['${stctrl.code.value}'] ??
+                  //                     "${controller.allQuizzesList[index].title['en']}",
+                  //                 subTitle: controller
+                  //                     .allQuizzesList[index].user.name,
+                  //                 price: controller.allQuizzesList[index].price,
+                  //                 discountPrice: controller
+                  //                     .allQuizzesList[index].discountPrice,
+                  //                 onTap: () async {
+                  //                   context.loaderOverlay.show();
+                  //                   final QuizController allQuizController =
+                  //                       Get.put(QuizController());
+                  //                   allQuizController.courseID.value =
+                  //                       controller.allQuizzesList[index].id;
+                  //
+                  //                   await allQuizController.getQuizDetails();
+                  //
+                  //                   if (allQuizController.isQuizBought.value) {
+                  //                     await allQuizController
+                  //                         .getMyQuizDetails();
+                  //                     Get.to(() => MyQuizDetailsPageView());
+                  //                     context.loaderOverlay.hide();
+                  //                   } else {
+                  //                     Get.to(() => QuizDetailsPageView());
+                  //                     context.loaderOverlay.hide();
+                  //                   }
+                  //                 },
+                  //               );
+                  //             }),
+                  //       );
+                  //     }
+                  //   }),
+                  // ),
                   //**  POPULAR COURSES
                   Container(
                       margin: EdgeInsets.only(

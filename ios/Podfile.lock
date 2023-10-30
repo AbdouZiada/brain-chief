@@ -212,7 +212,7 @@ PODS:
   - ios_insecure_screen_detector (0.0.1):
     - Flutter
   - IosAwnCore (0.7.3)
-  - IOSSecuritySuite (1.9.9)
+  - IOSSecuritySuite (1.9.10)
   - JitsiMeetSDK (4.1.0)
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
@@ -244,9 +244,9 @@ PODS:
   - RevenueCat (4.25.6)
   - screenshot_callback (0.0.1):
     - Flutter
-  - SDWebImage (5.18.2):
-    - SDWebImage/Core (= 5.18.2)
-  - SDWebImage/Core (5.18.2)
+  - SDWebImage (5.18.3):
+    - SDWebImage/Core (= 5.18.3)
+  - SDWebImage/Core (5.18.3)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -265,7 +265,6 @@ PODS:
   - VdoFramework (2.5.3)
   - video_player_avfoundation (0.0.1):
     - Flutter
-    - FlutterMacOS
   - wakelock_plus (0.0.1):
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
@@ -303,7 +302,7 @@ DEPENDENCIES:
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - vdocipher_flutter (from `.symlinks/plugins/vdocipher_flutter/ios`)
-  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/ios`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
@@ -409,7 +408,7 @@ EXTERNAL SOURCES:
   vdocipher_flutter:
     :path: ".symlinks/plugins/vdocipher_flutter/ios"
   video_player_avfoundation:
-    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+    :path: ".symlinks/plugins/video_player_avfoundation/ios"
   wakelock_plus:
     :path: ".symlinks/plugins/wakelock_plus/ios"
   webview_flutter_wkwebview:
@@ -441,12 +440,12 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: 64b6ada098c649304114a817effd7e5f87229b11
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_facebook_auth: 47c7a8594f2d6864618e30b5a6d59dff0d2e59fe
-  flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
+  flutter_inappwebview: 3d32228f1304635e7c028b0d4252937730bbc6cf
   flutter_jailbreak_detection: c5bf66ff6c0c4230769b6ba0bd63eb6ac4148a76
   flutter_paystack: 50021637b71e7712780744f69d2843e71b65175d
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   flutter_webview_plugin: ed9e8a6a96baf0c867e90e1bce2673913eeac694
-  fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
+  fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   google_sign_in_ios: 1256ff9d941db546373826966720b0c24804bcdd
   GoogleAppMeasurement: 722db6550d1e6d552b08398b69a975ac61039338
@@ -457,7 +456,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   ios_insecure_screen_detector: 6197868403aa3765491fadb6edb13bb81ec978cd
   IosAwnCore: 6494e0e174d49f04f513e8a002187be226889a37
-  IOSSecuritySuite: 72c55371aafe586196c325a8348319c36d385ce4
+  IOSSecuritySuite: e764318117aabd1f894cbdfc5ac013a59352953d
   JitsiMeetSDK: 0716f9a49278330a57d8b28304f78c25ae5ab963
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   open_document: 63eea128860263e68b67ef3b31f74a5ae22e4c71
@@ -473,7 +472,7 @@ SPEC CHECKSUMS:
   razorpay_flutter: 84b3bfd206ae9c9c2a9ba585524a1b3d8102b6c1
   RevenueCat: 9726d792ed47b41dfe83754c1391fa3d08e1bbdf
   screenshot_callback: b173e7f4bd8d2ef14a9a5e5a77c0ac6a47578608
-  SDWebImage: c0de394d7cf7f9838aed1fd6bb6037654a4572e4
+  SDWebImage: 96e0c18ef14010b7485210e92fac888587ebb958
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
@@ -482,10 +481,10 @@ SPEC CHECKSUMS:
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
   vdocipher_flutter: 821b95a3324801e69e95d073ce7dbc9fef76f313
   VdoFramework: 450fc87e81103f20bb6c24c2ca9bbd6c8d5c4a99
-  video_player_avfoundation: 8563f13d8fc8b2c29dc2d09e60b660e4e8128837
+  video_player_avfoundation: 81e49bb3d9fb63dccf9fa0f6d877dc3ddbeac126
   wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
 PODFILE CHECKSUM: 1a0c9628c318d26a32d4daabfe7c43b5ab283692
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.13.0
